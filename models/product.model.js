@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
     // Associations
     Product.associate = (db) => {
         // None right now
-        console.log('In product associate');
+        db.Product.belongsToMany(db.Order, { through: 'OrderProducts' })
     }
     // Return
     return Product

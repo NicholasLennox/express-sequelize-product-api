@@ -1,11 +1,30 @@
+const { Op } = require('sequelize')
+
 class ProductService {
     constructor(db) {
         this.db = db
         this.products = db.Product
     }
 
-    async getAll() {
-        return await this.products.findAll()
+    async getAll(query) {
+        const { name, price, sort, page, size } = query
+        // Filters
+        const nameCondition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+        const priceCondition = price ? { price: { [Op.lte]: price } } : null;
+        const filterCondition = {[Op.and]: [nameCondition, priceCondition]};
+        // Ordering
+        const order = sort ? sort.split(',').map(pair => pair.split(':')) : []
+        
+        // Pagination
+        const limit = size ? Number(size) : 10 
+        const offset = page ? (page-1) * limit : 0;
+        
+        return await this.products.findAll({
+            where: filterCondition,
+            order,
+            limit,
+            offset
+        })
     }
 
     async getById(id) {

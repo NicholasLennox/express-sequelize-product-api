@@ -1,52 +1,54 @@
 const express = require('express')
 const router = express.Router()
+const jsend = require('jsend')
+const createError = require('http-errors')
 // Inject service
 const ProductService = require('../services/product')
 const db = require('../models')
-const { ValidationError } = require('sequelize')
 const productService = new ProductService(db)
+// Add jsend middleware
+router.use(jsend.middleware)
 
 router.get('/', async (req, res) => {
     try {
-        const products = await productService.getAll()
-        res.status(200).json(products)
+        const products = await productService.getAll(req.query)
+        res.status(200).jsend.success(products)
     } catch (error) {
-        res.status(500).json({message: error.message})
+        next(error)
     }
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
     try {
         const id = parseInt(req.params.id) // NaN
 
         if(!id) {
-            return res.status(400).json({message: 'ID is in an invalid format'})
+            return next(createError(400, 'ID is in an invalid format'))
         }
 
         const product = await productService.getById(id)
 
         if(!product) {
-            return res.status(404).json({message: `Product with ID ${id} does not exist`})
+            return next(createError(404,`Product with ID ${id} does not exist`))
         }
 
-        res.status(200).json(product)
+        res.status(200).jsend.success([product])
 
     } catch (error) {
-        res.status(500).json({message: error.message})
+        next(error)
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     try {
+        throw new Error('something went wrong')
         const newProduct = await productService.add(req.body)
         res.status(201).json(newProduct)
     } catch (error) {
-        if(error instanceof ValidationError) {
-            return res.status(400).json({message: error.errors.map(err => err.message)})
-        }
-        res.status(500).json({message: error.message})
+        next(error)
     }
 })
+
 
 
 module.exports = router
