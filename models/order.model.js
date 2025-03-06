@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     // Associations
     Order.associate = (db) => {
         // Setup M:M with product
-        db.Order.belongsToMany(db.Product, { through: 'OrderProducts' })
+        db.Order.belongsToMany(db.Product, { through: 'OrderProducts', as: 'products' })
     }
     // Return order out
     return Order

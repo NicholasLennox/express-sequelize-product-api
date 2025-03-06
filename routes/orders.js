@@ -24,4 +24,13 @@ router.post('/', async (req,res, next) => {
     }
 })
 
+router.get('/', async (req, res, next) => {
+    try {
+        const orders = await orderService.getAll()
+        res.status(200).jsend.success({ statusCode: 200, result: orders })
+    } catch (error) {
+        next(error)
+    }
+})
+
 module.exports = router

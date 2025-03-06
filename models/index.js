@@ -11,7 +11,7 @@ const sequelize = new Sequelize({
     dialect: process.env.DB_DIALECT,
     define: {
         timestamps: process.env.DB_TIMESTAMPS === 'true',
-        underscores: process.env.DB_UNDERSCORES === 'true'
+        underscored: process.env.DB_UNDERSCORES === 'true'
     }
 })
 
