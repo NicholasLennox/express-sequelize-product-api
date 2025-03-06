@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         stock: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            default: 0,
+            defaultValue: 0,
             validate: {
                 isInt: true,
                 min: {
